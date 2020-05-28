@@ -21,6 +21,4 @@ jobs:
           CI: true
       
       - uses: craftech-io/slack-action@v1
-        with:
-          slack_webhook_url: http://culquier.com
         if: always()
