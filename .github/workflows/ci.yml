@@ -3,7 +3,7 @@ name: CI
 on: 
   push:
     branches: 
-      - master
+      - test
 jobs:
   ci:
     runs-on: ubuntu-latest
@@ -16,6 +16,32 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
+          
+      - name: Generate a config.json
+        run: |
+          mkdir -p /kaniko/.docker
+          echo "{\"credsStore\":\"ecr-login\",\"credHelpers\":{\"$AWS_ACCOUNT_ID.dkr.ecr.region.amazonaws.com\":\"ecr-login\"}}" > /kaniko/.docker/config.json         
       
-      - uses: craftech-io/slack-action@v1
-        if: always()
+      - name: Upload math result for job 2
+        uses: actions/upload-artifact@v2
+        with:
+          name: config.json
+          path: /kaniko/.docker/config.json
+  
+  validate:
+    name: 'kaniko'
+    runs-on: [self-hosted, linux, X64]
+    container:
+      image: gcr.io/kaniko-project/executor:latest
+      env:
+        TF_VAR_region: us-east-1
+    steps:
+     - name: Download math result for job 2
+       uses: actions/download-artifact@v2
+       with:
+        name: config.json
+        path: /kaniko/.docker/config.json
+        
+     - name: build
+       run:
+        --context=test --dockerfile=test/Dockerfile --destination=test --cache=true --cache-repo=test       
