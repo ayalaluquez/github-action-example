@@ -34,7 +34,7 @@ jobs:
     name: 'kaniko'
     runs-on: ubuntu-latest #[self-hosted, linux, X64]
     container:
-      image: gcr.io/kaniko-project/executor:latest
+      image: gcr.io/kaniko-project/executor:debug-v1.0.0
       options: --entrypoint "/bin/bah"
 
     steps:
