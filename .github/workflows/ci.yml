@@ -6,9 +6,11 @@ on:
       - test
 jobs:
   ci:
-    runs-on: ubuntu-latest
+    name: 'kaniko'
+    runs-on: ubuntu-latest #[self-hosted, linux, X64]
     container:
-      image: ubuntu
+      image: gcr.io/kaniko-project/executor:debug-v1.0.0
+      options: --entrypoint "sh"
     steps:
       - uses: actions/checkout@v1
         
@@ -23,27 +25,21 @@ jobs:
         run: |
           mkdir -p /kaniko/.docker
           echo "{\"credsStore\":\"ecr-login\",\"credHelpers\":{\"$AWS_ACCOUNT_ID.dkr.ecr.region.amazonaws.com\":\"ecr-login\"}}" > /kaniko/.docker/config.json         
-      
-      - name: Upload math result for job 2
-        uses: actions/upload-artifact@v2
-        with:
-          name: config.json
-          path: /kaniko/.docker/config.json
+    
+      - name: test
+        run:
+          /kaniko/executor --context=test --dockerfile=test/Dockerfile --destination=test --cache=true --cache-repo=test'
+          
+#       - name: Upload math result for job 2
+#         uses: actions/upload-artifact@v2
+#         with:
+#           name: config.json
+#           path: /kaniko/.docker/config.json
   
-  validate:
-    name: 'kaniko'
-    runs-on: ubuntu-latest #[self-hosted, linux, X64]
-    container:
-      image: gcr.io/kaniko-project/executor:debug-v1.0.0
-      options: --entrypoint "sh"
 
-    steps:
 #      - name: Download math result for job 2
 #        uses: actions/download-artifact@v2
 #        with:
 #         name: config.json
 #         path: /kaniko/.docker/config.json
-    
-     - name: Download math result for job 2
-       run:
-         /kaniko/executor --context=test --dockerfile=test/Dockerfile --destination=test --cache=true --cache-repo=test'     
+   
