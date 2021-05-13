@@ -43,5 +43,6 @@ jobs:
         path: /kaniko/.docker/config.json
         
      - name: build
+       shell: bash
        run:
-        --context=test --dockerfile=test/Dockerfile --destination=test --cache=true --cache-repo=test       
+         /kaniko/executor --context=test --dockerfile=test/Dockerfile --destination=test --cache=true --cache-repo=test'     
