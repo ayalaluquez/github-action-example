@@ -30,7 +30,7 @@ jobs:
   
   validate:
     name: 'kaniko'
-    runs-on: [self-hosted, linux, X64]
+    runs-on: ubuntu-latest #[self-hosted, linux, X64]
     container:
       image: gcr.io/kaniko-project/executor:latest
       env:
