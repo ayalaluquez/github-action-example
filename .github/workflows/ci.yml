@@ -35,11 +35,8 @@ jobs:
     runs-on: ubuntu-latest #[self-hosted, linux, X64]
     container:
       image: gcr.io/kaniko-project/executor:latest
-      options: 
-        entrypoint: ""
-        arg: '--context=test --dockerfile=test/Dockerfile --destination=test --cache=true --cache-repo=test'
-      env:
-        TF_VAR_region: us-east-1
+      options: -- entrypoint ""
+
     steps:
      - name: Download math result for job 2
        uses: actions/download-artifact@v2
@@ -47,6 +44,6 @@ jobs:
         name: config.json
         path: /kaniko/.docker/config.json
     
-
-       #run:
-        # /kaniko/executor --context=test --dockerfile=test/Dockerfile --destination=test --cache=true --cache-repo=test'     
+     - name: Download math result for job 2
+       run:
+         /kaniko/executor --context=test --dockerfile=test/Dockerfile --destination=test --cache=true --cache-repo=test'     
