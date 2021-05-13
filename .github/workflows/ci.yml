@@ -14,12 +14,12 @@ jobs:
     steps:
       - uses: actions/checkout@v1
         
-#       - name: Configure AWS credentials
-#         uses: aws-actions/configure-aws-credentials@v1
-#         with:
-#           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-#           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-#           aws-region: us-east-1
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
           
       - name: Generate a config.json
         run: |
@@ -30,16 +30,4 @@ jobs:
         run:
           /kaniko/executor --context=test --dockerfile=test/Dockerfile --destination=test --cache=true --cache-repo=test'
           
-#       - name: Upload math result for job 2
-#         uses: actions/upload-artifact@v2
-#         with:
-#           name: config.json
-#           path: /kaniko/.docker/config.json
-  
-
-#      - name: Download math result for job 2
-#        uses: actions/download-artifact@v2
-#        with:
-#         name: config.json
-#         path: /kaniko/.docker/config.json
    
