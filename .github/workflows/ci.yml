@@ -38,11 +38,11 @@ jobs:
       options: --entrypoint "/bin/bah"
 
     steps:
-     - name: Download math result for job 2
-       uses: actions/download-artifact@v2
-       with:
-        name: config.json
-        path: /kaniko/.docker/config.json
+#      - name: Download math result for job 2
+#        uses: actions/download-artifact@v2
+#        with:
+#         name: config.json
+#         path: /kaniko/.docker/config.json
     
      - name: Download math result for job 2
        run:
