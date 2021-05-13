@@ -24,11 +24,11 @@ jobs:
       - name: Generate a config.json
         run: |
           mkdir -p /kaniko/.docker
-          echo "{\"credsStore\":\"ecr-login\",\"credHelpers\":{\"556020183454..dkr.ecr.region.amazonaws.com\":\"ecr-login\"}}" > /kaniko/.docker/config.json         
+          echo "{\"credsStore\":\"ecr-login\",\"credHelpers\":{\"556020183454.dkr.ecr.region.amazonaws.com\":\"ecr-login\"}}" > /kaniko/.docker/config.json         
     
       - name: test
         run:
-           /kaniko/executor --force --context=$GITHUB_WORKSPACE --dockerfile=$GITHUB_WORKSPACE/Dockerfile --destination=556020183454..dkr.ecr.us-east-1.amazonaws.com/kaniko-test:latest --cache=true --cache-repo=556020183454.dkr.ecr.us-east-1.amazonaws.com/kaniko-test
+           /kaniko/executor --force --context=$GITHUB_WORKSPACE --dockerfile=$GITHUB_WORKSPACE/Dockerfile --destination=556020183454.dkr.ecr.us-east-1.amazonaws.com/kaniko-test:latest --cache=true --cache-repo=556020183454.dkr.ecr.us-east-1.amazonaws.com/kaniko-test
 
 
          # /kaniko/executor --context=test --dockerfile=test/Dockerfile --destination=test --cache=true --cache-repo=556020183454.dkr.ecr.us-east-1.amazonaws.com/kaniko-test'
