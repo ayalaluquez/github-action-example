@@ -7,13 +7,22 @@ on:
 jobs:
   ci:
     name: 'kaniko'
-    runs-on: [self-hosted, linux, X64]
-    container:
-      image: gcr.io/kaniko-project/executor:debug-v1.0.0
-      options: --entrypoint "sh"
+    runs-on: kaniko
+#     container:
+#       image: gcr.io/kaniko-project/executor:debug-v1.0.0
+#       options: --entrypoint "sh"
     steps:
       - uses: actions/checkout@v1
-        
+      - uses: whoan/docker-build-with-cache-action@v5
+        with:
+          username: "${{ secrets.AWS_ACCESS_KEY_ID }}"  # no need to provide it if you already logged in with aws-actions/configure-aws-credentials
+          password: "${{ secrets.AWS_SECRET_ACCESS_KEY }}"  # no need to provide it if you already logged in with aws-actions/configure-aws-credentials
+          # private registry
+          registry: 103144140553.dkr.ecr.us-west-2.amazonaws.com
+          # or public registry
+          #registry: public.ecr.aws
+          image_name: build-test
+          
 #       - name: Configure AWS credentials
 #         uses: aws-actions/configure-aws-credentials@v1
 #         with:
@@ -21,12 +30,12 @@ jobs:
 #           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 #           aws-region: us-east-1
           
-      - name: Generate a config.json
-        run: |
-          mkdir -p /kaniko/.docker
-          echo "{\"credsStore\":\"ecr-login\",\"credHelpers\":{\"556020183454.dkr.ecr.region.amazonaws.com\":\"ecr-login\"}}" > /kaniko/.docker/config.json         
+#       - name: Generate a config.json
+#         run: |
+#           mkdir -p /kaniko/.docker
+#           echo "{\"credsStore\":\"ecr-login\",\"credHelpers\":{\"556020183454.dkr.ecr.region.amazonaws.com\":\"ecr-login\"}}" > /kaniko/.docker/config.json         
     
-      - name: test
-        run:
-           export TAG="${GITHUB_REF##*/}_latest"
-           /kaniko/executor --force --context=$GITHUB_WORKSPACE --dockerfile=$GITHUB_WORKSPACE/Dockerfile --destination=556020183454.dkr.ecr.us-east-1.amazonaws.com/kaniko-test:$TAG --cache=true --cache-repo=556020183454.dkr.ecr.us-east-1.amazonaws.com/kaniko-test
+#       - name: test
+#         run:
+#            export TAG="${GITHUB_REF##*/}_latest"
+#            /kaniko/executor --force --context=$GITHUB_WORKSPACE --dockerfile=$GITHUB_WORKSPACE/Dockerfile --destination=556020183454.dkr.ecr.us-east-1.amazonaws.com/kaniko-test:$TAG --cache=true --cache-repo=556020183454.dkr.ecr.us-east-1.amazonaws.com/kaniko-test
