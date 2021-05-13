@@ -15,8 +15,6 @@ jobs:
       - uses: actions/checkout@v1
       - uses: whoan/docker-build-with-cache-action@v5
         with:
-          username: "${{ secrets.AWS_ACCESS_KEY_ID }}"  # no need to provide it if you already logged in with aws-actions/configure-aws-credentials
-          password: "${{ secrets.AWS_SECRET_ACCESS_KEY }}"  # no need to provide it if you already logged in with aws-actions/configure-aws-credentials
           # private registry
           registry: 103144140553.dkr.ecr.us-west-2.amazonaws.com
           # or public registry
