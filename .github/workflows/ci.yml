@@ -7,7 +7,7 @@ on:
 jobs:
   ci:
     name: 'kaniko'
-    runs-on: kaniko
+    runs-on: [self-hosted, linux, X64]
 #     container:
 #       image: gcr.io/kaniko-project/executor:debug-v1.0.0
 #       options: --entrypoint "sh"
