@@ -28,9 +28,5 @@ jobs:
     
       - name: test
         run:
-           /kaniko/executor --force --context=$GITHUB_WORKSPACE --dockerfile=$GITHUB_WORKSPACE/Dockerfile --destination=556020183454.dkr.ecr.us-east-1.amazonaws.com/kaniko-test:latest --cache=true --cache-repo=556020183454.dkr.ecr.us-east-1.amazonaws.com/kaniko-test
-
-
-         # /kaniko/executor --context=test --dockerfile=test/Dockerfile --destination=test --cache=true --cache-repo=556020183454.dkr.ecr.us-east-1.amazonaws.com/kaniko-test'
-          
-   
+           export TAG="${GITHUB_REF##*/}_latest"
+           /kaniko/executor --force --context=$GITHUB_WORKSPACE --dockerfile=$GITHUB_WORKSPACE/Dockerfile --destination=556020183454.dkr.ecr.us-east-1.amazonaws.com/kaniko-test:$TAG --cache=true --cache-repo=556020183454.dkr.ecr.us-east-1.amazonaws.com/kaniko-test
