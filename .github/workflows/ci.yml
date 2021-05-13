@@ -35,7 +35,7 @@ jobs:
     runs-on: ubuntu-latest #[self-hosted, linux, X64]
     container:
       image: gcr.io/kaniko-project/executor:latest
-      options: -- entrypoint ""
+      options: --entrypoint ""
 
     steps:
      - name: Download math result for job 2
