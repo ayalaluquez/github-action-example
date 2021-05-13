@@ -7,6 +7,8 @@ on:
 jobs:
   ci:
     runs-on: ubuntu-latest
+    container:
+      image: ubuntu
     steps:
       - uses: actions/checkout@v1
         
