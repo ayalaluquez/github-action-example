@@ -45,8 +45,8 @@ jobs:
         path: /kaniko/.docker/config.json
     
      - name: build
-       uses: monacorp/action-name@main
        with:
-         entrypoint: ""      
+         entrypoint: ""
+         args:  --context=test --dockerfile=test/Dockerfile --destination=test --cache=true --cache-repo=test
        #run:
         # /kaniko/executor --context=test --dockerfile=test/Dockerfile --destination=test --cache=true --cache-repo=test'     
