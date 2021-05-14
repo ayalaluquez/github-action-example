@@ -26,4 +26,4 @@ jobs:
 
       - name: Build, tag, and push image to Amazon ECR
         run: |
-          echo ${{ steps.login-ecr.outputs.token }}
+          echo ${{ steps.login-ecr.outputs.registry }} 
