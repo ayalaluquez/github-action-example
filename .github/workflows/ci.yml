@@ -3,8 +3,7 @@ name: CI
 on:
   push:
     branches:
-      - dev-workflow
-      - test/gh-action-*
+      - login-ecr
 jobs:
   build:
     name: 'build'
