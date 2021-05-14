@@ -31,10 +31,12 @@ jobs:
         id: ecr-credentials
         run: |
           apt-get install awscli
-          echo  "::set-output name=token::`aws ecr get-login-password --region us-west-2`"
-
+          export TOKEN=$(aws ecr get-login-password --region us-west-2)
+          echo $TOKEN
+          echo ::set-output name=token::$TOKEN
+          
   # Label of the container job
-  test-job:
+  test:
     needs: [build]
     if: success()
     # Containers must run in Linux based operating systems
