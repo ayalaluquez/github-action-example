@@ -1,29 +1,47 @@
 name: CI
 
-on: 
+on:
   push:
-    branches: 
+    branches:
       - login-ecr
+
 jobs:
-  ci:
-    runs-on: ubuntu-latest
+  build:
+    name: 'build'
+    runs-on: [self-hosted, linux, X64]
+    outputs:
+      token: ${{ steps.ecr-credentials.outputs.token }}
     steps:
       - uses: actions/checkout@v1
-        
-      - name: Configure AWS credentials
+      - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-west-2
-      
-      - uses: craftech-io/slack-action@v1
-        if: always()
-        
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
+          
+      - name: Build, Tag, Push
+        uses: whoan/docker-build-with-cache-action@v5
+        with:
+          registry: 103144140553.dkr.ecr.us-west-2.amazonaws.com
+          image_name: build-test
+          image_tag: test-ecr-login
 
-      - name: Build, tag, and push image to Amazon ECR
+      - name: Get AWS ECR credentials
+        id: ecr-credentials
         run: |
-          echo ${{ steps.login-ecr.outputs.registry }} 
+          apt-get install awscli
+          echo  "::set-output name=token::`aws ecr get-login-password --region us-west-2`"
+
+  # Label of the container job
+  test-job:
+    needs: [build]
+    if: success()
+    # Containers must run in Linux based operating systems
+    runs-on: [self-hosted, linux, X64]
+    # Docker Hub image that `test-job` executes in
+    container:
+      image: 103144140553.dkr.ecr.us-west-2.amazonaws.com:${{ github.sha }}
+      credentials:
+        username: AWS
+        password: ${{ needs.build.outputs.token }}
