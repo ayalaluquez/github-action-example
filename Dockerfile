@@ -22,6 +22,7 @@ RUN set -x \
   libssl-dev \
   zlib1g-dev \
   gnupg \
+  vim \
   " \
   && runDeps=" \
   libjpeg-dev \
