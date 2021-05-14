@@ -39,10 +39,10 @@ jobs:
     needs: [build]
     if: success()
     # Containers must run in Linux based operating systems
-    runs-on: [self-hosted, linux, X64]
-    # Docker Hub image that `test-job` executes in
+    runs-on: ubuntu-latest
+    # AWS ECR image that `test-job` executes in
     container:
-      image: 103144140553.dkr.ecr.us-west-2.amazonaws.com:${{ github.sha }}
+      image: 103144140553.dkr.ecr.us-west-2.amazonaws.com:test-ecr-login
       credentials:
         username: AWS
         password: ${{ needs.build.outputs.token }}
