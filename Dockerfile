@@ -1,5 +1,7 @@
 FROM python:3.7-slim-buster
+
 WORKDIR /app
+
 RUN set -x \
   && buildDeps=" \
   git \
