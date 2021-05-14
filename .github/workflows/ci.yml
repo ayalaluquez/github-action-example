@@ -22,7 +22,7 @@ jobs:
       - name: Get AWS ECR credentials
         id: ecr-credentials
         run: |
-          apt-get install awscli
+          sudo apt-get install awscli
           export TOKEN=$(aws ecr get-login-password --region us-west-2)
           echo ::set-output name=token::$TOKEN
           
