@@ -3,8 +3,8 @@ name: CI
 on:
   push:
     branches:
-      - login-ecr
-
+      - dev-workflow
+      - test/gh-action-*
 jobs:
   build:
     name: 'build'
@@ -20,6 +20,13 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-west-2
           
+      - name: Get AWS ECR credentials
+        id: ecr-credentials
+        run: |
+          export TOKEN=$(aws ecr get-login-password --region us-west-2)
+          echo $TOKEN
+          echo ::set-output name=token::$TOKEN
+          
       - name: Build, Tag, Push
         uses: whoan/docker-build-with-cache-action@v5
         with:
@@ -27,16 +34,9 @@ jobs:
           image_name: build-test
           image_tag: test-ecr-login
 
-      - name: Get AWS ECR credentials
-        id: ecr-credentials
-        run: |
-          apt-get install awscli
-          export TOKEN=$(aws ecr get-login-password --region us-west-2)
-          echo $TOKEN
-          echo ::set-output name=token::$TOKEN
-          
+
   # Label of the container job
-  test:
+  test-job:
     needs: [build]
     if: success()
     # Containers must run in Linux based operating systems
@@ -47,3 +47,11 @@ jobs:
       credentials:
         username: AWS
         password: ${{ needs.build.outputs.token }}
+
+    steps:
+      
+      - name: Check out repository code
+        run:
+          echo ${{ needs.build.outputs.token }}
+
+          
