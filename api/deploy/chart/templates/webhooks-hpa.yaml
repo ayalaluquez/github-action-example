@@ -1,0 +1,33 @@
+{{- if and .Values.webhooks.enabled .Values.webhooks.autoscaling.enabled }}
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  labels:
+    helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    app.kubernetes.io/name: {{ template "wakingup.fullname" . }}-webhooks
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion }}
+    app.kubernetes.io/component: webhooks
+  name: {{ template "wakingup.fullname" . }}-webhooks
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ template "wakingup.fullname" . }}-webhooks
+  minReplicas: {{ .Values.webhooks.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.webhooks.autoscaling.maxReplicas }}
+  metrics:
+{{- with .Values.webhooks.autoscaling.targetCPUUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: cpu
+        targetAverageUtilization: {{ . }}
+{{- end }}
+{{- with .Values.webhooks.autoscaling.targetMemoryUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: memory
+        targetAverageUtilization: {{ . }}
+{{- end }}
+{{- end }}
