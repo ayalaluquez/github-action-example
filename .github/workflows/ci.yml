@@ -13,14 +13,13 @@ jobs:
 
       - name: Deploy production
         if: github.ref == 'refs/heads/if-master'
-        run: echo "quiero pizza"
-#        uses: peymanmortazavi/eks-helm-deploy@v2
-#        with:
-#          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-#          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-#          aws-region: us-west-2
-#          cluster-name: ${{ secrets.CLUSTER_NAME }}
-#          config-files: api/deploy/chart/values-dev.yaml
-#          namespace: test
-#          values: global.image.tag=${{ github.sha }}
-#          name: wakingup-api-v2
+        uses: craftech-io/eks-helm-deploy-action
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-west-2
+          cluster-name: ${{ secrets.CLUSTER_NAME }}
+          config-files: api/deploy/chart/values-dev.yaml
+          namespace: test
+          values: global.image.tag=${{ github.sha }}
+          name: wakingup-api-v2
