@@ -39,5 +39,6 @@ jobs:
     steps:
       - name: Deploy
         uses: WyriHaximus/github-action-helm3@v2
+        if: ${{ github.ref == 'refs/heads/development' && github.ref == 'refs/heads/staging' && github.ref == 'refs/heads/testing' && github.event.action == 'pull_request'}}
         with:
          exec: echo "helm upgrade --timeout 0 $HELM_RELEASE_NAME  $CHART_PATH --values $CHART_PATH/values-${GITHUB_REF##*/}.yaml --set global.image.tag=${{ github.sha }}--namespace=wait-${GITHUB_REF##*/}"
