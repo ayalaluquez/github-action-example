@@ -4,9 +4,9 @@ on:
   push:
     branches:
       - test-docker
-      - testing
-      - staging
-      - development
+#       - testing
+#       - staging
+#       - development
   pull_request:
     branches:
       - testing
@@ -24,8 +24,8 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1    
-      - name: error
-        run: exit 1     
+#       - name: error
+#         run: exit 1    
       
 
   deploy:
