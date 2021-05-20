@@ -1,0 +1,10 @@
+apiVersion: v2
+name: wakingup-api-v2
+version: 0.3.0
+Appversion: latest
+icon: https://avatars.githubusercontent.com/u/42387511?s=200&v=4
+keywords:
+  - wakingup
+  - api
+description: >
+    Waking Up API V2

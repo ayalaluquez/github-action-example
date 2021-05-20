@@ -1,0 +1,94 @@
+{{- if .Values.api.enabled -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "wakingup.fullname" . }}-api
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    app.kubernetes.io/name: {{ template "wakingup.fullname" . }}-api
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion }}
+    app.kubernetes.io/component: api    
+spec:
+  replicas: {{ .Values.api.replicaCount }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ template "wakingup.fullname" . }}-api
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/managed-by: {{ .Release.Service }}
+      app.kubernetes.io/component: api
+  template:
+    metadata:
+      labels:
+        helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+        app.kubernetes.io/name: {{ template "wakingup.fullname" . }}-api
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/managed-by: {{ .Release.Service }}
+        app.kubernetes.io/version: {{ .Chart.AppVersion }}
+        app.kubernetes.io/component: api
+      {{- template "api.annotations" . }}
+    spec:
+      {{ template "api.affinity" . }}
+      {{ template "api.tolerations" . }}
+      {{ template "api.nodeselector" . }}
+      terminationGracePeriodSeconds: {{ .Values.api.terminationGracePeriodSeconds | default 300 }}
+      containers:
+        - name: wakingup-api
+          image: {{ .Values.global.image.repository }}:{{ .Values.global.image.tag }}
+          imagePullPolicy: {{ .Values.global.image.pullPolicy }}
+          command: ["yarn"]
+          args:
+            - start-api
+          {{- if .Values.api.readinessProbe.enabled }}
+          readinessProbe:
+            httpGet:
+              scheme: HTTP
+              path: /healthz
+              port: {{ .Values.api.service.port }}
+            initialDelaySeconds: 10
+            periodSeconds: 5
+           {{- end }}
+          {{- if .Values.api.livenessProbe.enabled }}
+          livenessProbe:
+            httpGet:
+              scheme: HTTP
+              path: /healthz
+              port: {{ .Values.api.service.port }}
+            initialDelaySeconds: 30
+            periodSeconds: 3
+          {{- end }}
+          {{ template "api.resources" . }}
+          envFrom:
+          - secretRef:
+          {{- if .Values.global.externalSecrets.enabled }}
+              name: {{ .Release.Name }}-api
+          {{ else }}
+              name: {{ .Values.api.varsSecretName | default "null" | quote }}
+          {{- end }}
+          - secretRef:
+          {{- if .Values.global.externalSecrets.enabled }}
+              name: shared
+          {{ else }}
+              name: shared
+          {{- end }}
+          {{ if .Values.global.datadog.enabled }}
+          env:
+          - name: DATADOG_TRACE_AGENT_HOSTNAME
+            valueFrom:
+              fieldRef:
+                fieldPath: spec.nodeName
+          - name: DD_AGENT_HOST
+            valueFrom:
+              fieldRef:
+                fieldPath: spec.nodeName
+          {{ end }}
+         {{ template "api.mounts" . }}
+         {{ template "api.volumes" . }}
+{{- end }}

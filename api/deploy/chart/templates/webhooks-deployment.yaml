@@ -1,0 +1,94 @@
+{{- if .Values.webhooks.enabled -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "wakingup.fullname" . }}-webhooks
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    app.kubernetes.io/name: {{ template "wakingup.fullname" . }}-webhooks
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion }}
+    app.kubernetes.io/component: webhooks
+spec:
+  replicas: {{ .Values.webhooks.replicaCount }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ template "wakingup.fullname" . }}-webhooks
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/managed-by: {{ .Release.Service }}
+      app.kubernetes.io/component: webhooks
+  template:
+    metadata:
+      labels:
+        helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+        app.kubernetes.io/name: {{ template "wakingup.fullname" . }}-webhooks
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/managed-by: {{ .Release.Service }}
+        app.kubernetes.io/version: {{ .Chart.AppVersion }}
+        app.kubernetes.io/component: webhooks
+      {{- template "webhooks.annotations" . }}
+    spec:
+      {{ template "webhooks.affinity" . }}
+      {{ template "webhooks.tolerations" . }}
+      {{ template "webhooks.nodeselector" . }}
+      terminationGracePeriodSeconds: {{ .Values.webhooks.terminationGracePeriodSeconds | default 300 }}
+      containers:
+        - name: wakingup-webhooks
+          image: {{ .Values.global.image.repository }}:{{ .Values.global.image.tag }}
+          imagePullPolicy: {{ .Values.global.image.pullPolicy }}
+          command: ["yarn"]
+          args:
+            - start-webhooks
+          {{- if .Values.webhooks.readinessProbe.enabled }}
+          readinessProbe:
+            httpGet:
+              scheme: HTTP
+              path: /healthz
+              port: {{ .Values.webhooks.service.port }}
+            initialDelaySeconds: 10
+            periodSeconds: 5
+           {{- end }}
+          {{- if .Values.webhooks.livenessProbe.enabled }}
+          livenessProbe:
+            httpGet:
+              scheme: HTTP
+              path: /healthz
+              port: {{ .Values.webhooks.service.port }}
+            initialDelaySeconds: 30
+            periodSeconds: 3
+          {{- end }}
+          {{ template "webhooks.resources" . }}
+          envFrom:
+          - secretRef:
+          {{- if .Values.global.externalSecrets.enabled }}
+              name: {{ .Release.Name }}-webhooks
+          {{ else }}
+              name: {{ .Values.webhooks.varsSecretName | default "null" | quote }}
+          {{- end }}
+          - secretRef:
+          {{- if .Values.global.externalSecrets.enabled }}
+              name: shared
+          {{ else }}
+              name: shared
+          {{- end }}
+          {{ if .Values.global.datadog.enabled }}
+          env:
+          - name: DATADOG_TRACE_AGENT_HOSTNAME
+            valueFrom:
+              fieldRef:
+                fieldPath: spec.nodeName
+          - name: DD_AGENT_HOST
+            valueFrom:
+              fieldRef:
+                fieldPath: spec.nodeName
+          {{ end }}
+         {{ template "webhooks.mounts" . }}
+         {{ template "webhooks.volumes" . }}
+{{- end }}
