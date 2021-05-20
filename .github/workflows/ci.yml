@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - if-master
 jobs:
   ci:
     runs-on: self-hosted
@@ -11,7 +12,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Deploy production
-        if: github.ref == 'refs/heads/master' && github.event.action == 'pull_request'
+        if: github.ref == 'refs/heads/master' && github.ref == 'refs/heads/if-master'
         run: echo "quiero pizza"
 #        uses: peymanmortazavi/eks-helm-deploy@v2
 #        with:
