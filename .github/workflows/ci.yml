@@ -1,7 +1,17 @@
 name: CI
 
-on: push
-
+on:
+  push:
+    branches:
+      - test-docker
+      - testing
+      - staging
+      - development
+  pull_request:
+    branches:
+      - testing
+      - staging
+      - development
 jobs:
   ci:
     runs-on: ubuntu-latest
@@ -26,7 +36,6 @@ jobs:
 
     steps:
       - name: Deploy
-        if: ${{ github.ref == 'refs/heads/development' && github.ref == 'refs/heads/staging' && github.ref == 'refs/heads/testing' && github.event.action == 'pull_request'}}
         uses: WyriHaximus/github-action-helm3@v2
         with:
          exec: echo "helm upgrade --timeout 0 $HELM_RELEASE_NAME  $CHART_PATH --values $CHART_PATH/values-${GITHUB_REF##*/}.yaml --set global.image.tag=${{ github.sha }}--namespace=wait-${GITHUB_REF##*/}"
