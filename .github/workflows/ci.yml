@@ -20,6 +20,7 @@ jobs:
           aws-region: us-west-2
           cluster-name: ${{ secrets.CLUSTER_NAME }}
           config-files: api/deploy/chart/values-dev.yaml
+          chart-path: api/deploy/chart
           namespace: test
           values: global.image.tag=${{ github.sha }}
           name: wakingup-api-v2
