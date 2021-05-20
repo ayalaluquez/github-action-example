@@ -1,9 +1,17 @@
 name: CI
 
-on: 
+on:
   push:
-    branches: 
-      - master
+    branches:
+      - test-docker
+#       - testing
+#       - staging
+#       - development
+  pull_request:
+    branches:
+      - testing
+      - staging
+      - development
 jobs:
   ci:
     runs-on: ubuntu-latest
@@ -15,7 +23,22 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
+          aws-region: us-east-1    
+#       - name: error
+#         run: exit 1    
       
-      - uses: craftech-io/slack-action@v1
-        if: always()
+
+  deploy:
+    needs: [ci]
+    name: 'deploy'
+    runs-on: ubuntu-latest
+    env:
+      HELM_RELEASE_NAME: wait-api-v2
+      CHART_PATH: api/deploy/chart
+
+    steps:
+      - name: Deploy
+        uses: WyriHaximus/github-action-helm3@v2
+        if: ${{ github.ref == 'refs/heads/development' && github.ref == 'refs/heads/staging' && github.ref == 'refs/heads/testing' && github.event.action == 'pull_request'}}
+        with:
+         exec: echo "helm upgrade --timeout 0 $HELM_RELEASE_NAME  $CHART_PATH --values $CHART_PATH/values-${GITHUB_REF##*/}.yaml --set global.image.tag=${{ github.sha }}--namespace=wait-${GITHUB_REF##*/}"
