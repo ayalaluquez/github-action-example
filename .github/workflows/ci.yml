@@ -32,7 +32,7 @@ jobs:
     needs: [ci]
     name: 'deploy'
     runs-on: ubuntu-latest
-    if:  github.ref == 'refs/heads/development' && github.event.action == 'pull_request'    
+    #if:  github.ref == 'refs/heads/development' && github.event.action == 'pull_request'    
     env:
       HELM_RELEASE_NAME: wait-api-v2
       CHART_PATH: api/deploy/chart
