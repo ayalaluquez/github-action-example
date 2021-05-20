@@ -17,7 +17,6 @@ jobs:
       
 
   deploy:
-    if: success()
     needs: [ci]
     name: 'deploy'
     runs-on: runner-xlarge
