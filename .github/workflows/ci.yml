@@ -8,17 +8,18 @@ jobs:
   ci:
     runs-on: self-hosted
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
 
       - name: Deploy production
-        if: github.ref == 'refs/heads/master'
-        uses: peymanmortazavi/eks-helm-deploy@v2
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-west-2
-          cluster-name: ${{ secrets.CLUSTER_NAME }}
-          config-files: api/deploy/chart/values-dev.yaml
-          namespace: test
-          values: global.image.tag=${{ github.sha }}
-          name: wakingup-api-v2
+        if: github.ref == 'refs/heads/master' && github.event.action == 'pull_request'
+        run: echo "quiero pizza"
+#        uses: peymanmortazavi/eks-helm-deploy@v2
+#        with:
+#          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#          aws-region: us-west-2
+#          cluster-name: ${{ secrets.CLUSTER_NAME }}
+#          config-files: api/deploy/chart/values-dev.yaml
+#          namespace: test
+#          values: global.image.tag=${{ github.sha }}
+#          name: wakingup-api-v2
