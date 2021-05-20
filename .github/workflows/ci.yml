@@ -29,7 +29,7 @@ jobs:
   deploy:
     needs: [ci]
     name: 'deploy'
-    runs-on: runner-xlarge
+    runs-on: ubuntu-latest
     env:
       HELM_RELEASE_NAME: wait-api-v2
       CHART_PATH: api/deploy/chart
